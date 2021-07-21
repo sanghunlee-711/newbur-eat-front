@@ -11,8 +11,8 @@ import {
 const LOGIN_MUTATION = gql`
   # $는 변수의 뜻 아래는 프론트엔드에서 정말 중요한 부분
   # 변수선언 및 타입을 알려주기 때문이고 백엔드의 schema와 동일하게 작성되어야함.
-  mutation LoginMutation($email: String!, $password: String!) {
-    login(input: { email: $email, password: $password }) {
+  mutation LoginMutation($loginInput: LoginInput!) {
+    login(input: { input: $loginInput }) {
       ok
       token
       error
@@ -40,8 +40,7 @@ export const Login = () => {
     const { email, password } = getValues();
     loginMutation({
       variables: {
-        email,
-        password,
+        loginInput: { email, password },
       },
     });
 
