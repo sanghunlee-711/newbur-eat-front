@@ -30,19 +30,23 @@ export const Login = () => {
     getValues,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm<ILoginForm>();
   const [loginMutation, { loading, error, data }] = useMutation<
     LoginMutation,
     LoginMutationVariables
-  >(LOGIN_MUTATION);
+  >(LOGIN_MUTATION, {
+    //이렇게 mutaion과 동시에 variables의 값을 넣어주는 방식도 있음.
+    variables: {
+      loginInput: {
+        email: watch('email'), //watch는 실시간으로 value의 변화를 지켜봐주는 react-hooks-form의 역할임
+        password: watch('password'),
+      },
+    },
+  });
 
   const onSubmit = () => {
-    const { email, password } = getValues();
-    loginMutation({
-      variables: {
-        loginInput: { email, password },
-      },
-    });
+    loginMutation();
 
     console.log(getValues());
   };
