@@ -6,20 +6,20 @@
 import { LoginInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: LoginMutation
+// GraphQL mutation operation: loginMutation
 // ====================================================
 
-export interface LoginMutation_login {
+export interface loginMutation_login {
   __typename: "LoginOutput";
   ok: boolean;
   token: string | null;
   error: string | null;
 }
 
-export interface LoginMutation {
-  login: LoginMutation_login;
+export interface loginMutation {
+  login: loginMutation_login;
 }
 
-export interface LoginMutationVariables {
+export interface loginMutationVariables {
   loginInput: LoginInput;
 }

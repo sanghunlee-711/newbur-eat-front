@@ -1,18 +1,17 @@
-import { useMutation } from '@apollo/client';
-import gql from 'graphql-tag';
+import { gql, useMutation } from '@apollo/client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { FormError } from '../components/form-error';
 import {
-  LoginMutation,
-  LoginMutationVariables,
+  loginMutation,
+  loginMutationVariables,
 } from '../__generated__/loginMutation';
 
+//  $는 변수의 뜻 아래는 프론트엔드에서 정말 중요한 부분
+// 변수선언 및 타입을 알려주기 때문이고 백엔드의 schema와 동일하게 작성되어야함.
 const LOGIN_MUTATION = gql`
-  # $는 변수의 뜻 아래는 프론트엔드에서 정말 중요한 부분
-  # 변수선언 및 타입을 알려주기 때문이고 백엔드의 schema와 동일하게 작성되어야함.
-  mutation LoginMutation($loginInput: LoginInput!) {
-    login(input: { input: $loginInput }) {
+  mutation loginMutation($loginInput: LoginInput!) {
+    login(input: $loginInput) {
       ok
       token
       error
@@ -30,25 +29,39 @@ export const Login = () => {
     getValues,
     formState: { errors },
     handleSubmit,
-    watch,
   } = useForm<ILoginForm>();
-  const [loginMutation, { loading, error, data }] = useMutation<
-    LoginMutation,
-    LoginMutationVariables
+
+  const onCompleted = (data: loginMutation) => {
+    console.log(data);
+    const {
+      login: { error, ok, token },
+    } = data;
+
+    if (ok) {
+      console.log(token);
+    } else {
+      if (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
+    loginMutation,
+    loginMutationVariables
   >(LOGIN_MUTATION, {
-    //이렇게 mutaion과 동시에 variables의 값을 넣어주는 방식도 있음.
-    variables: {
-      loginInput: {
-        email: watch('email'), //watch는 실시간으로 value의 변화를 지켜봐주는 react-hooks-form의 역할임
-        password: watch('password'),
-      },
-    },
+    onCompleted,
   });
 
   const onSubmit = () => {
-    loginMutation();
-
-    console.log(getValues());
+    if (!loading) {
+      const { email, password } = getValues();
+      loginMutation({
+        variables: {
+          loginInput: { email, password },
+        },
+      });
+    }
   };
 
   return (
@@ -90,7 +103,12 @@ export const Login = () => {
               <FormError errorMessage="Password must be more than 10 chars." />
             </span>
           )}
-          <button className="btn  mt-3">Log In</button>
+          <button className="btn  mt-3">
+            {loading ? 'Loading...' : 'Log In'}
+          </button>
+          {loginMutationResult?.login.error && (
+            <FormError errorMessage={loginMutationResult.login.error} />
+          )}
         </form>
       </div>
     </div>
