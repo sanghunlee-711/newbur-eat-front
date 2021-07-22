@@ -1,11 +1,12 @@
 import { gql, useMutation } from '@apollo/client';
 import React from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { isLoggedInVar } from '../apollo';
+import { authToken, isLoggedInVar } from '../apollo';
 import { Button } from '../components/button';
 import { FormError } from '../components/form-error';
+import { LOCALSTORAGE_TOKEN } from '../constant';
 import newberLogo from '../images/eats-logo-1a01872c77.svg';
 import {
   loginMutation,
@@ -44,8 +45,9 @@ export const Login = () => {
       login: { error, ok, token },
     } = data;
 
-    if (ok) {
-      console.log(token);
+    if (ok && token) {
+      localStorage.setItem(LOCALSTORAGE_TOKEN, token);
+      authToken(token);
       isLoggedInVar(true); //reactiveVar에 저장
     } else {
       if (error) {
