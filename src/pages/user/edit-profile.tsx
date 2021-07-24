@@ -24,36 +24,39 @@ interface IFormProps {
 }
 
 export const EditProfile = () => {
-  const { data: userData } = useMe();
+  const { data: userData, refetch } = useMe();
   const client = useApolloClient();
-  const onCompleted = (data: editProfile) => {
+  const onCompleted = async (data: editProfile) => {
     const {
       editProfile: { ok },
     } = data;
 
     if (ok && userData) {
-      //mutation 쿼리를 날리고 cache를 프론트단에서 직접(곧바로) 업데이트 해주면 속도가 훨씬 빨라짐
+      //1. refetch메서드를 통해 업데이트 된 정보를 서버로 부터 다시 불러오는 방법.
+      await refetch();
+      //2.mutation 쿼리를 날리고 cache를 프론트단에서 직접(곧바로) 업데이트 해주며 다시 서버에서 불러오지 않는 방법
+      //이렇게 하면 유저가 보기에 훨씬빠른 업데이트가 이루어짐
       //쿼리가 cache의 변경을 보고 업데이트를 위해 다시 서버를 fetch하지 않아도 되기 때문이다<div className=""></div>
       //update cache
-      const {
-        me: { email: prevEmail, id },
-      } = userData;
-      const { email: newEmail } = getValues();
-      if (prevEmail !== newEmail) {
-        client.writeFragment({
-          id: `User:${id}`,
-          fragment: gql`
-            fragment EditedUser on User {
-              email
-              verified
-            }
-          `,
-          data: {
-            email: newEmail,
-            verified: false,
-          },
-        });
-      }
+      // const {
+      //   me: { email: prevEmail, id },
+      // } = userData;
+      // const { email: newEmail } = getValues();
+      // if (prevEmail !== newEmail) {
+      //   client.writeFragment({
+      //     id: `User:${id}`,
+      //     fragment: gql`
+      //       fragment EditedUser on User {
+      //         email
+      //         verified
+      //       }
+      //     `,
+      //     data: {
+      //       email: newEmail,
+      //       verified: false,
+      //     },
+      //   });
+      // }
     }
   };
 
