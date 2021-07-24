@@ -8,6 +8,8 @@ import {
   verifyEmailVariables,
 } from '../../__generated__/verifyEmail';
 
+
+
 const VERIFY_EMAIL_MUTATION = gql`
   # for ts
   mutation verifyEmail($input: VerifyEmailInput!) {
