@@ -12,6 +12,8 @@ import {
   PAGINATION_FRAGMENT,
   RESTAURANT_FRAGMENT,
 } from '../../fragments';
+import { CategoryParts } from '../../__generated__/CategoryParts';
+import { RestaurantParts } from '../../__generated__/RestaurantParts';
 import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
@@ -92,13 +94,17 @@ export const Restaurants = () => {
       </form>
       {!loading && (
         <div className="max-w-screen-2xl mx-auto mt-8 pb-20">
-          <CategoriesLink data={data} />
-          <RestaurantsGrid data={data} />
+          <CategoriesLink
+            data={data?.allCategories.categories as [CategoryParts]}
+          />
+          <RestaurantsGrid
+            data={data?.restaurants.results as [RestaurantParts]}
+          />
           <PaginationBottom
             onPrevPageClick={onPrevPageClick}
             onNextPageClick={onNextPageClick}
             page={page}
-            data={data}
+            totalPages={data?.restaurants.totalPages}
           />
         </div>
       )}

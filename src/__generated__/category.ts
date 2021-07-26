@@ -35,6 +35,10 @@ export interface category_category_category {
 
 export interface category_category {
   __typename: "CategoryOutput";
+  ok: boolean;
+  error: string | null;
+  totalPages: number | null;
+  totalResults: number | null;
   restaurants: category_category_restaurants[] | null;
   category: category_category_category | null;
 }

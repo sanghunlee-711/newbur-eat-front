@@ -2,11 +2,7 @@ import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import React from 'react';
 import { useParams } from 'react-router';
-import {
-  CATEGORY_FRAGMENT,
-  PAGINATION_FRAGMENT,
-  RESTAURANT_FRAGMENT,
-} from '../../fragments';
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragments';
 import { category, categoryVariables } from '../../__generated__/category';
 
 interface ICategoryParams {
@@ -16,7 +12,10 @@ interface ICategoryParams {
 const CATEGORY_QUERY = gql`
   query category($input: CategoryInput!) {
     category(input: $input) {
-      ...PaginationParts
+      ok
+      error
+      totalPages
+      totalResults
 
       restaurants {
         ...RestaurantParts
@@ -26,7 +25,6 @@ const CATEGORY_QUERY = gql`
       }
     }
   }
-  ${PAGINATION_FRAGMENT}
   ${RESTAURANT_FRAGMENT}
   ${CATEGORY_FRAGMENT}
 `;

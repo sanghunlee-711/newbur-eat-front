@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
-import { restaurantsPageQuery } from '../__generated__/restaurantsPageQuery';
+import { CategoryParts } from '../__generated__/CategoryParts';
 
 interface IProps {
-  data: restaurantsPageQuery | undefined;
+  data: [CategoryParts];
 }
 export const CategoriesLink: React.FC<IProps> = ({ data }) => {
   return (
     <div className="flex justify-around  mx-w-sm mx-auto">
-      {data?.allCategories.categories?.map((category) => (
+      {data?.map((category) => (
         <Link to={`/category/${category.slug}`} key={category.name}>
           <div className="flex flex-col items-center cursor-pointer group">
             <div

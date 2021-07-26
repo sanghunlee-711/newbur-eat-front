@@ -1,9 +1,12 @@
 import { useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useHistory, useLocation } from 'react-router';
+import { PaginationBottom } from '../../components/pagination-bottom';
+import { RestaurantsGrid } from '../../components/restaurants-grid';
 import { RESTAURANT_FRAGMENT } from '../../fragments';
+import { RestaurantParts } from '../../__generated__/RestaurantParts';
 import {
   searchRestaurant,
   searchRestaurantVariables,
@@ -33,6 +36,11 @@ export const Search: React.FC = () => {
     searchRestaurant,
     searchRestaurantVariables
   >(SEARCH_RESTAURANT);
+  const [page, setPage] = useState(1);
+
+  const onNextPageClick = () => setPage((current) => current + 1);
+  const onPrevPageClick = () => setPage((current) => current - 1);
+
   //레이지 쿼리는 실행하는 함수를 반환해주고 나머지는 useQuery랑 똑같이 넘겨주게 됨
   useEffect(() => {
     const [_, query] = location.search.split('?term=');
@@ -46,21 +54,34 @@ export const Search: React.FC = () => {
     queryReadyToStart({
       variables: {
         input: {
-          page: 1,
+          page,
           query,
         },
       },
     });
-  }, [history, location]);
+  }, [history, location, page]);
 
-  console.log(loading, data, called);
+  console.log(loading, data?.searchRestaurant.restaurants, called);
 
   return (
-    <h1>
+    <React.Fragment>
       <Helmet>
         <title>Search | NewberEats</title>
       </Helmet>
-      Search Page
-    </h1>
+      <div className="bg-gray-800 w-full py-40 flex items-center justify-center">
+        <span className="font-mono  text-white	text-3xl">
+          Result with: {location.search.split('?term=')[1]}
+        </span>
+      </div>
+      <RestaurantsGrid
+        data={data?.searchRestaurant.restaurants as [RestaurantParts]}
+      />
+      <PaginationBottom
+        totalPages={data?.searchRestaurant.totalPages}
+        page={page}
+        onNextPageClick={onNextPageClick}
+        onPrevPageClick={onPrevPageClick}
+      />
+    </React.Fragment>
   );
 };
