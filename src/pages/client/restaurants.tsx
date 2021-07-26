@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
-import { Restaurant } from '../../components/restaurant';
+import { CategoriesLink } from '../../components/categories-link';
+import { PaginationBottom } from '../../components/pagination-bottom';
+import { RestaurantsGrid } from '../../components/restaurants-grid';
 import {
   CATEGORY_FRAGMENT,
   PAGINATION_FRAGMENT,
@@ -91,58 +92,14 @@ export const Restaurants = () => {
       </form>
       {!loading && (
         <div className="max-w-screen-2xl mx-auto mt-8 pb-20">
-          <div className="flex justify-around  mx-w-sm mx-auto">
-            {data?.allCategories.categories?.map((category) => (
-              <Link to={`/category/${category.slug}`} key={category.name}>
-                <div className="flex flex-col items-center cursor-pointer group">
-                  <div
-                    className="w-16 h-16 bg-cover rounded-full  group-hover:bg-gray-100 "
-                    style={{ backgroundImage: `url(${category.coverImg})` }}
-                  ></div>
-                  <span className="text-sm text-center font-medium mt-1">
-                    {category.name}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-            {data?.restaurants.results?.map((restaurant) => (
-              <Restaurant
-                key={restaurant.name + restaurant.id}
-                id={restaurant.id + ''}
-                name={restaurant.name}
-                coverImg={restaurant.coverImg}
-                categoryName={restaurant.category?.name || ''}
-              />
-            ))}
-          </div>
-          <div className="grid grid-cols-3 text-center max-w-md item-center mx-auto">
-            {page > 1 ? (
-              <button
-                className="focus:outline-none font-medium text-2xl"
-                onClick={onPrevPageClick}
-              >
-                &larr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-
-            <span className="mx-5">
-              Page {page} of {data?.restaurants.totalPages}
-            </span>
-            {page !== data?.restaurants.totalPages ? (
-              <button
-                className="focus:outline-none font-medium text-2xl"
-                onClick={onNextPageClick}
-              >
-                &rarr;
-              </button>
-            ) : (
-              <div></div>
-            )}
-          </div>
+          <CategoriesLink data={data} />
+          <RestaurantsGrid data={data} />
+          <PaginationBottom
+            onPrevPageClick={onPrevPageClick}
+            onNextPageClick={onNextPageClick}
+            page={page}
+            data={data}
+          />
         </div>
       )}
       <div></div>
