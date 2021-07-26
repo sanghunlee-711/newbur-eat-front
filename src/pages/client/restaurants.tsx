@@ -6,7 +6,11 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Restaurant } from '../../components/restaurant';
-import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragments';
+import {
+  CATEGORY_FRAGMENT,
+  PAGINATION_FRAGMENT,
+  RESTAURANT_FRAGMENT,
+} from '../../fragments';
 import {
   restaurantsPageQuery,
   restaurantsPageQueryVariables,
@@ -22,17 +26,15 @@ const RESTAURANTS_QUERY = gql`
       }
     }
     restaurants(input: $input) {
-      ok
-      error
-      totalPages
-      totalResults
+      ...PaginationParts
       results {
         ...RestaurantParts
       }
     }
   }
-  ${RESTAURANT_FRAGMENT}
   ${CATEGORY_FRAGMENT}
+  ${PAGINATION_FRAGMENT}
+  ${RESTAURANT_FRAGMENT}
 `;
 
 interface IFormProps {
@@ -91,11 +93,8 @@ export const Restaurants = () => {
         <div className="max-w-screen-2xl mx-auto mt-8 pb-20">
           <div className="flex justify-around  mx-w-sm mx-auto">
             {data?.allCategories.categories?.map((category) => (
-              <Link to={`/category/${category.slug}`}>
-                <div
-                  className="flex flex-col items-center cursor-pointer group"
-                  key={category.name}
-                >
+              <Link to={`/category/${category.slug}`} key={category.name}>
+                <div className="flex flex-col items-center cursor-pointer group">
                   <div
                     className="w-16 h-16 bg-cover rounded-full  group-hover:bg-gray-100 "
                     style={{ backgroundImage: `url(${category.coverImg})` }}

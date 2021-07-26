@@ -22,3 +22,12 @@ export const CATEGORY_FRAGMENT = gql`
     restaurantCount
   }
 `;
+
+export const PAGINATION_FRAGMENT = gql`
+  fragment PaginationParts on RestaurantsOutput {
+    ok
+    error
+    totalPages
+    totalResults
+  }
+`;
