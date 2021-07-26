@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
-import { CategoriesLink } from '../../components/categories-link';
+import { CategoriesLink } from '../../components/categories-links';
 import { PaginationBottom } from '../../components/pagination-bottom';
 import { RestaurantsGrid } from '../../components/restaurants-grid';
 import {
