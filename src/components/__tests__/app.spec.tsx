@@ -17,8 +17,8 @@ jest.mock('../../routers/logged-in-router.tsx', () => {
 
 describe('<App />', () => {
   it('renders LoggedOutRouter', () => {
-    const { debug, getByText } = render(<App />);
-    debug();
+    const { getByText } = render(<App />);
+    // debug();
     getByText('logged-out');
   });
 
