@@ -9,22 +9,20 @@ describe('<Restaurant />', () => {
       id: '1',
       name: 'name',
       categoryName: 'categoryName',
-      coverImg: 'lala',
+      coverImg: 'coverImgURL',
     };
 
     const { debug, getByText, container } = render(
       <Router>
-        <Restaurant
-          id="1"
-          coverImg="x"
-          name="nameTest"
-          categoryName="cateTest"
-        />
+        <Restaurant {...restaurantProps} />
       </Router>
     );
     debug();
-    getByText('nameTest');
-    getByText('cateTest');
-    expect(container.firstChild).toHaveAttribute('href', '/restaurants/1');
+    getByText(restaurantProps.name);
+    getByText(restaurantProps.categoryName);
+    expect(container.firstChild).toHaveAttribute(
+      'href',
+      `/restaurants/${restaurantProps.id}`
+    );
   });
 });
