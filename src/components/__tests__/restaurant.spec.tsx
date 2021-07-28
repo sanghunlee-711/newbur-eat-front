@@ -12,12 +12,12 @@ describe('<Restaurant />', () => {
       coverImg: 'coverImgURL',
     };
 
-    const { debug, getByText, container } = render(
+    const { getByText, container } = render(
       <Router>
         <Restaurant {...restaurantProps} />
       </Router>
     );
-    debug();
+
     getByText(restaurantProps.name);
     getByText(restaurantProps.categoryName);
     expect(container.firstChild).toHaveAttribute(
