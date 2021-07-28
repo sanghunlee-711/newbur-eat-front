@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
     <>
       {!data?.me.verified && (
         <div className="bg-red-500 p-3 text-center text-sm text-white">
-          <span>please veify your email</span>
+          <span>Please veify your email.</span>
         </div>
       )}
       <header className=" py-4">
