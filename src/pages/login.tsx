@@ -15,7 +15,7 @@ import {
 
 //  $는 변수의 뜻 아래는 프론트엔드에서 정말 중요한 부분
 // 변수선언 및 타입을 알려주기 때문이고 백엔드의 schema와 동일하게 작성되어야함.
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
@@ -36,7 +36,7 @@ export const Login = () => {
     formState: { errors, isValid },
     handleSubmit,
   } = useForm<ILoginForm>({
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   const onCompleted = (data: loginMutation) => {
@@ -92,7 +92,7 @@ export const Login = () => {
             {...register('email', {
               required: 'Email is required',
               pattern:
-                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g,
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
             name="email"
             type="text"
@@ -100,16 +100,17 @@ export const Login = () => {
             placeholder="Email"
             className="input"
           />
-          {errors.email?.message && (
-            <FormError errorMessage={errors.email?.message} />
-          )}
+
           {errors.email?.type === 'pattern' && (
             <FormError errorMessage="Please Enter a valid email" />
+          )}
+          {errors.email?.message && (
+            <FormError errorMessage={errors.email?.message} />
           )}
           <input
             {...register('password', {
               required: 'Password is required',
-              minLength: 10,
+              // minLength: 10,
             })}
             name="password"
             type="password"
@@ -120,11 +121,11 @@ export const Login = () => {
           {errors.password?.message && (
             <FormError errorMessage={errors.password?.message} />
           )}
-          {errors.password?.type === 'minLength' && (
+          {/* {errors.password?.type === 'minLength' && (
             <span className="font-medium text-red-500">
               <FormError errorMessage="Password must be more than 10 chars." />
             </span>
-          )}
+          )} */}
           <Button canClick={isValid} loading={loading} actionText="Log In" />
 
           {loginMutationResult?.login.error && (
