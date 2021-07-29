@@ -1,6 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
 import CategoryLink from '../../components/category-link';
@@ -11,7 +11,7 @@ import { category, categoryVariables } from '../../__generated__/category';
 import { CategoryParts } from '../../__generated__/CategoryParts';
 import { RestaurantParts } from '../../__generated__/RestaurantParts';
 
-const CATEGORY_QUERY = gql`
+export const CATEGORY_QUERY = gql`
   query category($input: CategoryInput!) {
     category(input: $input) {
       ok
@@ -39,25 +39,32 @@ export const Category = () => {
   const params = useParams<ICategoryParams>();
   const [page, setPage] = useState(1);
 
-  const [queryReadyToStart, { data, loading, error }] = useLazyQuery<
-    category,
-    categoryVariables
-  >(CATEGORY_QUERY);
-
-  console.log(data);
-
-  useEffect(() => {
-    if (params.slug) {
-      queryReadyToStart({
-        variables: {
-          input: {
-            page,
-            slug: params.slug,
-          },
+  const { data, loading, error } = useQuery<category, categoryVariables>(
+    CATEGORY_QUERY,
+    {
+      variables: {
+        input: {
+          page,
+          slug: params.slug,
         },
-      });
+      },
     }
-  }, []);
+  );
+
+  console.log('data', data);
+
+  // useEffect(() => {
+  //   if (params.slug) {
+  //     queryReadyToStart({
+  //       variables: {
+  //         input: {
+  //           page,
+  //           slug: params.slug,
+  //         },
+  //       },
+  //     });
+  //   }
+  // }, []);
 
   const onNextPageClick = () => setPage((current) => current + 1);
   const onPrevPageClick = () => setPage((current) => current - 1);
