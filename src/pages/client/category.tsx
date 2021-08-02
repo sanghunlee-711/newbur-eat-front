@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
 import CategoryLink from '../../components/category-link';
@@ -39,20 +39,35 @@ export const Category = () => {
   const params = useParams<ICategoryParams>();
   const [page, setPage] = useState(1);
 
-  const { data, loading, error } = useQuery<category, categoryVariables>(
-    CATEGORY_QUERY,
-    {
-      variables: {
-        input: {
-          page,
-          slug: params.slug,
-        },
+  const [queryReadyToStart, { data, loading, error }] = useLazyQuery<
+    category,
+    categoryVariables
+  >(CATEGORY_QUERY, {
+    variables: {
+      input: {
+        page,
+        slug: params.slug,
       },
-    }
-  );
+    },
+  });
 
   console.log('data', data);
 
+  useEffect(() => {
+    if (params.slug) {
+      queryReadyToStart({
+        variables: {
+          input: {
+            page,
+            slug: params.slug,
+          },
+        },
+      });
+    }
+  }, []);
+
+  // useLazyQuery가 테스트할때 값을 return해주지 못하는 문제가 발생했음
+  // https://github.com/apollographql/apollo-client/issues/6865
   // useEffect(() => {
   //   if (params.slug) {
   //     queryReadyToStart({

@@ -34,7 +34,10 @@ describe('<Category />', () => {
                         id: 1,
                         name: 'test-restaurant',
                         coverImg: 'test-coverimg-url',
-                        category: 'test-category-name',
+                        category: {
+                          __typename: 'Category',
+                          name: 'test-category-name',
+                        },
                         address: 'test-address',
                         isPromoted: true,
                       },
@@ -72,5 +75,9 @@ describe('<Category />', () => {
     await waitFor(() => {
       debug();
     });
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
   });
 });
