@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": "../node_modules", //cypress가 설치된 곳
+    "types": ["cypress", "@testing-library/cypress"],
+    "outDir": "#" // tsconfig는 기본적으로 index를 바라보고 build하러 하는데 그것을 막기 위함
+  },
+  "include": ["./**/*.*"] //모든 폴더의 모든 파일의 모든 extension을 적용하기 위함
+}
