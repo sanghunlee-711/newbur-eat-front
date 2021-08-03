@@ -23,19 +23,7 @@ describe('Log In', () => {
     user.findByRole('alert').should('have.text', 'Password is required');
   });
 
-  it('can fill out the form', () => {
-    user.visit('/');
-    user.findByPlaceholderText(/email/i).type('legend@test.com');
-    user.findByPlaceholderText(/password/i).type('test');
-    user
-      .findByRole('button')
-      .should('not.have.class', 'pointer-events-none')
-      .click();
-    user.window().its('localStorage.newber-token').should('be.a', 'string');
-    //to do (can log in)
-  });
-
-  it('sign up', () => {
-    user.visit('/create-account');
+  it('can fill out the form and login', () => {
+    user.login('legend@test.com', 'test');
   });
 });

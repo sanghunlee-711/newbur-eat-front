@@ -38,10 +38,6 @@ describe('Create Account', () => {
     user.findByRole('button').click();
 
     user.wait(1000);
-    user.title().should('eq', 'Login | Newber Eats');
-    user.findByPlaceholderText(/email/i).type('real@test.com');
-    user.findAllByPlaceholderText(/password/i).type('test');
-    user.findByRole('button').click();
-    user.window().its('localStorage.newber-token').should('be.a', 'string');
+    user.login('real@test.com', 'test');
   });
 });
