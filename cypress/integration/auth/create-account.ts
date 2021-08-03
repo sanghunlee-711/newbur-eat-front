@@ -20,13 +20,15 @@ describe('Create Account', () => {
       if (operationName && operationName === 'createAccountMutation') {
         req.reply((res) => {
           res.send({
-            data: {
-              createAccount: {
-                ok: true,
-                error: null,
-                __typename: 'CreateAccountOutPut',
-              },
-            },
+            fixture: 'auth/create-account.json',
+            //fixture를 이용해서 만들어 놓은 Req, Res를 받아올 수 있게 된다.
+            // data: {
+            //   createAccount: {
+            //     ok: true,
+            //     error: null,
+            //     __typename: 'CreateAccountOutPut',
+            //   },
+            // },
           });
         });
       }
