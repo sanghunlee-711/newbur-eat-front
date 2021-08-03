@@ -15,18 +15,33 @@ describe('Create Account', () => {
   });
 
   it('Shoulde be able to create account and login ', () => {
-    user.visit('/create-account');
+    user.intercept('http://localhost:4000/graphql', (req) => {
+      const { operationName } = req.body;
+      if (operationName && operationName === 'createAccountMutation') {
+        req.reply((res) => {
+          res.send({
+            data: {
+              createAccount: {
+                ok: true,
+                error: null,
+                __typename: 'CreateAccountOutPut',
+              },
+            },
+          });
+        });
+      }
+    });
 
+    user.visit('/create-account');
     user.findAllByPlaceholderText(/email/i).type('real@test.com');
     user.findAllByPlaceholderText(/password/i).type('test');
     user.findByRole('button').click();
 
     user.wait(1000);
-
+    user.title().should('eq', 'Login | Newber Eats');
     user.findByPlaceholderText(/email/i).type('real@test.com');
     user.findAllByPlaceholderText(/password/i).type('test');
     user.findByRole('button').click();
-
     user.window().its('localStorage.newber-token').should('be.a', 'string');
   });
 });
