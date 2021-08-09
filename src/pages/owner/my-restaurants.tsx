@@ -3,10 +3,12 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { RestaurantsGrid } from '../../components/restaurants-grid';
 import { RESTAURANT_FRAGMENT } from '../../fragments';
 import { myRestaurants } from '../../__generated__/myRestaurants';
+import { RestaurantParts } from '../../__generated__/RestaurantParts';
 
-const MY_RESTAURANTS_QUERY = gql`
+export const MY_RESTAURANTS_QUERY = gql`
   query myRestaurants {
     myRestaurants {
       ok
@@ -31,14 +33,18 @@ export const MyRestaurants: React.FC = (): JSX.Element => {
       <div className=" container mt-32">
         <h2 className="text-4xl font-medium mb-10">My Restaurants</h2>
         {data?.myRestaurants.ok &&
-          data.myRestaurants.restaurants?.length !== 0 && (
-            <>
-              <h4 className=" text-xl mb-5">You have no Restaurants!</h4>
-              <Link className="link" to="/add-restaurant">
-                Create One &rarr;
-              </Link>
-            </>
-          )}
+        data.myRestaurants.restaurants?.length === 0 ? (
+          <>
+            <h4 className=" text-xl mb-5">You have no Restaurants!</h4>
+            <Link className="link" to="/add-restaurant">
+              Create One &rarr;
+            </Link>
+          </>
+        ) : (
+          <RestaurantsGrid
+            data={data?.myRestaurants.restaurants as [RestaurantParts]}
+          />
+        )}
       </div>
     </div>
   );

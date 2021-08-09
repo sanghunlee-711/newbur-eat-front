@@ -8,6 +8,7 @@ import { RestaurantDetail } from '../pages/client/restaurant-detail';
 import { Restaurants } from '../pages/client/restaurants';
 import { Search } from '../pages/client/search';
 import { AddRestaurants } from '../pages/owner/add-restaurants';
+import { MyRestaurant } from '../pages/owner/my-restaurant';
 import { MyRestaurants } from '../pages/owner/my-restaurants';
 import { EditProfile } from '../pages/user/edit-profile';
 
@@ -33,6 +34,7 @@ const clientRoutes = [
 const restaurantRoutes = [
   { path: '/', component: <MyRestaurants /> },
   { path: '/add-restaurant', component: <AddRestaurants /> },
+  { path: '/restaurants/:id', component: <MyRestaurant /> },
 ];
 
 const commonRoutes = [

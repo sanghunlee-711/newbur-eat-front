@@ -1,20 +1,23 @@
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router';
 import { Button } from '../../components/button';
 import { FormError } from '../../components/form-error';
 import {
   createRestaurant,
   createRestaurantVariables,
 } from '../../__generated__/createRestaurant';
+import { MY_RESTAURANTS_QUERY } from './my-restaurants';
 
 const CREATE_RESTAURANT_MUTAION = gql`
   mutation createRestaurant($input: CreateRestaurantInput!) {
     createRestaurant(input: $input) {
       error
       ok
+      restaurantId
     }
   }
 `;
@@ -27,13 +30,53 @@ interface IFormProps {
 }
 
 export const AddRestaurants = () => {
+  const client = useApolloClient();
+  const history = useHistory();
+  const [imageUrl, setImageUrl] = useState<string>('');
   const onCompleted = (data: createRestaurant) => {
     const {
-      createRestaurant: { ok, error },
+      createRestaurant: { ok, error, restaurantId },
     } = data;
 
     if (ok) {
+      const { name, categoryName, address } = getValues();
       setUploading(false);
+
+      //업데이트 후 곧바로 api 호출을 하는 낭비를 막기 위해 곧바로 fake restaurants를 만들어 렌더 시켜줄거임(캐시에 저장과 함께)
+      //1. apollo client를 통해 브라우저의 Cache에 있는 데이터를 받아온다
+      const queryResult = client.readQuery({ query: MY_RESTAURANTS_QUERY });
+      console.log(queryResult);
+      //2. writeQuery 를 이용해 데이터를 완전 바꿔치기 하는 것이 아니라 필요한 하나만 추가해주는 방식으로 기존형태를 유지하며 캐시에 작성해준다.
+      if (
+        queryResult &&
+        queryResult.myRestaurants &&
+        queryResult.myRestaurants.restaurants
+      ) {
+        client.writeQuery({
+          query: MY_RESTAURANTS_QUERY,
+          data: {
+            myRestaurants: {
+              ...queryResult.myRestaurants,
+              restaurants: [
+                {
+                  address,
+                  category: {
+                    name: categoryName,
+                    __typename: 'Category',
+                  },
+                  coverImg: imageUrl,
+                  id: restaurantId,
+                  isPromoted: false,
+                  name,
+                  __typename: 'Restaurant',
+                },
+                ...queryResult.myRestaurants.restaurants,
+              ],
+            },
+          },
+        });
+        history.push('/');
+      }
     }
   };
 
@@ -42,6 +85,7 @@ export const AddRestaurants = () => {
     createRestaurantVariables
   >(CREATE_RESTAURANT_MUTAION, {
     onCompleted,
+    refetchQueries: [{ query: MY_RESTAURANTS_QUERY }],
   });
 
   const {
@@ -69,6 +113,7 @@ export const AddRestaurants = () => {
         })
       ).json();
 
+      setImageUrl(coverImg);
       createRestaurantMutation({
         variables: {
           input: {
