@@ -9,6 +9,7 @@ import {
   createRestaurant,
   createRestaurantVariables,
 } from '../../__generated__/createRestaurant';
+import { MY_RESTAURANTS_QUERY } from './my-restaurants';
 
 const CREATE_RESTAURANT_MUTAION = gql`
   mutation createRestaurant($input: CreateRestaurantInput!) {
@@ -42,6 +43,7 @@ export const AddRestaurants = () => {
     createRestaurantVariables
   >(CREATE_RESTAURANT_MUTAION, {
     onCompleted,
+    refetchQueries: [{ query: MY_RESTAURANTS_QUERY }],
   });
 
   const {
