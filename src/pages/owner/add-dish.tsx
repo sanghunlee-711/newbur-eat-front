@@ -28,6 +28,7 @@ interface IForm {
   name: string;
   price: string;
   description: string;
+  [key: string]: string;
 }
 
 export const AddDish = () => {
@@ -55,32 +56,40 @@ export const AddDish = () => {
 
   const onSubmit = () => {
     const { name, price, description, ...rest } = getValues();
-    console.log(rest);
-    // createDishMutaion({
-    //   variables: {
-    //     input: {
-    //       name,
-    //       price: +price,
-    //       description,
-    //       restaurantId: +restaurantId,
-    //     },
-    //   },
-    // });
-    // history.goBack();
+    // console.log(rest);
+
+    const optionObjects = optionsNumber.map((theId) => ({
+      name: rest[`${theId}-optionName`],
+      extra: +rest[`${theId}-optionExtra`],
+    }));
+    console.log(optionObjects);
+
+    createDishMutaion({
+      variables: {
+        input: {
+          name,
+          price: +price,
+          description,
+          restaurantId: +restaurantId,
+          options: optionObjects,
+        },
+      },
+    });
+    history.goBack();
   };
 
-  const [optionsNumber, setOptionsNumber] = useState<number>(0);
+  const [optionsNumber, setOptionsNumber] = useState<number[]>([]);
 
   const onAddOptionClick = () => {
-    setOptionsNumber((current) => current + 1);
+    setOptionsNumber((current) => [Date.now(), ...current]);
   };
+
   const onDeleteClick = (idToDelete: number) => {
-    setOptionsNumber((current) => current - 1);
-    //@ts-ignore
+    setOptionsNumber((current) => current.filter((id) => id !== idToDelete));
     setValue(`${idToDelete}-optionName`, '');
-    //@ts-ignore
     setValue(`${idToDelete}-optionExtra`, '');
   };
+
   return (
     <div className="container mt-32 flex items-center flex-col">
       <Helmet>
@@ -115,29 +124,32 @@ export const AddDish = () => {
           <h4 className="font-medium mb-3 text-lg">Dish Options</h4>
           <span
             onClick={onAddOptionClick}
-            className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 bg-gray-400"
+            className="cursor-pointer text-white bg-gray-900 py-1 px-2 mt-5 "
           >
             Add Dish Option
           </span>
-          {optionsNumber !== 0 &&
-            Array.from(new Array(optionsNumber)).map((_, index) => (
-              <div key={index} className="mt-5">
+          {optionsNumber.length !== 0 &&
+            optionsNumber.map((id) => (
+              <div key={id} className="mt-5">
                 <input
-                  //@ts-ignore
-                  {...register(`${index}-optionName`)}
+                  {...register(`${id}-optionName`)}
                   className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2 mr-2"
                   type="text"
                   placeholder="Option Name"
                 />
                 <input
-                  //@ts-ignore
-                  {...register(`${index}-optionExtra`)}
+                  {...register(`${id}-optionExtra`)}
                   className="py-2 px-4 focus:outline-none focus:border-gray-600 border-2"
                   type="number"
                   min={0}
                   placeholder="Option Extra"
                 />
-                <span onClick={() => onDeleteClick(index)}>Delete Option</span>
+                <span
+                  className="py-3 px-4 cursor-pointer text-white bg-red-500 ml-3  mt-5 "
+                  onClick={() => onDeleteClick(id)}
+                >
+                  Delete Option
+                </span>
               </div>
             ))}
         </div>
