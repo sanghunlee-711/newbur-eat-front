@@ -7,6 +7,7 @@ import { Category } from '../pages/client/category';
 import { RestaurantDetail } from '../pages/client/restaurant-detail';
 import { Restaurants } from '../pages/client/restaurants';
 import { Search } from '../pages/client/search';
+import { AddDish } from '../pages/owner/add-dish';
 import { AddRestaurants } from '../pages/owner/add-restaurants';
 import { MyRestaurant } from '../pages/owner/my-restaurant';
 import { MyRestaurants } from '../pages/owner/my-restaurants';
@@ -35,6 +36,7 @@ const restaurantRoutes = [
   { path: '/', component: <MyRestaurants /> },
   { path: '/add-restaurant', component: <AddRestaurants /> },
   { path: '/restaurants/:id', component: <MyRestaurant /> },
+  { path: '/restaurants/:restaurantId/add-dish', component: <AddDish /> },
 ];
 
 const commonRoutes = [
