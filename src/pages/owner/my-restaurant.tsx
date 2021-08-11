@@ -3,8 +3,21 @@ import gql from 'graphql-tag';
 import React from 'react';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
+import {
+  VictoryAxis,
+  VictoryChart,
+  VictoryLabel,
+  VictoryLine,
+  VictoryTheme,
+  VictoryTooltip,
+  VictoryZoomContainer,
+} from 'victory';
 import { Dish } from '../../components/dish';
-import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragments';
+import {
+  DISH_FRAGMENT,
+  ORDERS_FRAGMENT,
+  RESTAURANT_FRAGMENT,
+} from '../../fragments';
 import {
   myRestaurant,
   myRestaurantVariables,
@@ -20,16 +33,47 @@ export const MY_RESTAURANT_QUERY = gql`
         menu {
           ...DishParts
         }
+        orders {
+          ...OrderParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
   ${DISH_FRAGMENT}
+  ${ORDERS_FRAGMENT}
 `;
 
 interface IParams {
   id: string;
 }
+
+const CHART_SAMPLE = [
+  {
+    x: 1,
+    y: 3000,
+  },
+  {
+    x: 2,
+    y: 1500,
+  },
+  {
+    x: 3,
+    y: 4250,
+  },
+  {
+    x: 4,
+    y: 6830,
+  },
+  {
+    x: 5,
+    y: 2300,
+  },
+  {
+    x: 6,
+    y: 7150,
+  },
+];
 
 export const MyRestaurant = () => {
   const { id } = useParams<IParams>();
@@ -43,6 +87,7 @@ export const MyRestaurant = () => {
       },
     }
   );
+  console.log(data);
 
   return (
     <div>
@@ -70,8 +115,9 @@ export const MyRestaurant = () => {
             <h4 className="text-xl mb-5">Please upload a dish!</h4>
           ) : (
             <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-              {data?.myRestaurant.restaurant?.menu.map((dish) => (
+              {data?.myRestaurant.restaurant?.menu.map((dish, index) => (
                 <Dish
+                  key={index}
                   name={dish.name}
                   description={dish.description}
                   price={dish.price}
@@ -79,6 +125,52 @@ export const MyRestaurant = () => {
               ))}
             </div>
           )}
+        </div>
+        <div className="mt-20">
+          <h4 className="text-center text-2xl font-medium">Sales</h4>
+          <div className=" mx-auto mb-10">
+            <VictoryChart
+              theme={VictoryTheme.material}
+              height={500}
+              domainPadding={50}
+              width={window.innerWidth}
+              containerComponent={<VictoryZoomContainer />}
+            >
+              <VictoryLine
+                labels={({ datum }) => `$${datum.y}`}
+                labelComponent={
+                  <VictoryTooltip
+                    style={{ fontSize: 12 }}
+                    renderInPortal
+                    dy={-20}
+                  />
+                }
+                data={data?.myRestaurant.restaurant?.orders.map((order) => ({
+                  x: order.createdAt,
+                  y: order.total,
+                }))}
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: 'gray',
+                    strokeWidth: 5,
+                  },
+                }}
+              />
+              <VictoryAxis
+                style={{ tickLabels: { fontSize: 15, fill: '#4d7c0f' } }}
+                dependentAxis
+                tickFormat={(tick) => `$${tick}`}
+              />
+              <VictoryAxis
+                tickLabelComponent={<VictoryLabel renderInPortal />}
+                style={{
+                  tickLabels: { fontSize: 10, fill: '#4d7c0f', angle: 45 },
+                }}
+                tickFormat={(tick) => new Date(tick).toLocaleDateString('ko')}
+              />
+            </VictoryChart>
+          </div>
         </div>
       </div>
     </div>

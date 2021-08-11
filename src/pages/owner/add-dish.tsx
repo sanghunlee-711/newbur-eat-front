@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
 import { Button } from '../../components/button';
+import { FormError } from '../../components/form-error';
 import {
   createDish,
   createDishVariables,
@@ -48,11 +49,17 @@ export const AddDish = () => {
         },
       },
     ],
+    onCompleted: () => history.goBack(),
   });
-  const { register, handleSubmit, formState, getValues, setValue } =
-    useForm<IForm>({
-      mode: 'onChange',
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    getValues,
+    setValue,
+  } = useForm<IForm>({
+    mode: 'onChange',
+  });
 
   const onSubmit = () => {
     const { name, price, description, ...rest } = getValues();
@@ -75,7 +82,6 @@ export const AddDish = () => {
         },
       },
     });
-    history.goBack();
   };
 
   const [optionsNumber, setOptionsNumber] = useState<number[]>([]);
@@ -104,8 +110,11 @@ export const AddDish = () => {
           className="input"
           type="text"
           placeholder="Name"
-          {...register('name', { required: 'Name is Required' })}
+          {...register('name', { required: 'Name is Required', minLength: 5 })}
         />
+        {errors.name?.type === 'minLength' && (
+          <FormError errorMessage={'Name is at least 5character'} />
+        )}
         <input
           className="input"
           type="number"
@@ -153,11 +162,7 @@ export const AddDish = () => {
               </div>
             ))}
         </div>
-        <Button
-          loading={loading}
-          canClick={formState.isValid}
-          actionText="Create Dish"
-        />
+        <Button loading={loading} canClick={isValid} actionText="Create Dish" />
       </form>
     </div>
   );
