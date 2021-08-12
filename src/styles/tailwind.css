@@ -6,7 +6,7 @@
 }
 
 .btn {
-  @apply mt-3 text-lg  font-medium text-white py-4 bg-lime-600 hover:bg-lime-800 transition-colors;
+  @apply text-lg  font-medium focus:outline-none text-white py-4  transition-colors bg-lime-600 hover:bg-lime-800;
 }
 
 .container {

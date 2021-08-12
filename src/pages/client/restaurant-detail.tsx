@@ -1,8 +1,11 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
-import { RESTAURANT_FRAGMENT } from '../../fragments';
+import { Dish } from '../../components/dish';
+import { DishOption } from '../../components/dish-option';
+import { DISH_FRAGMENT, RESTAURANT_FRAGMENT } from '../../fragments';
+import { CreateOrderItemInput } from '../../__generated__/globalTypes';
 import {
   restaurant,
   restaurantVariables,
@@ -15,10 +18,23 @@ const RESTAURANT_QUERY = gql`
       error
       restaurant {
         ...RestaurantParts
+        menu {
+          ...DishParts
+        }
       }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${DISH_FRAGMENT}
+`;
+
+const CREATE_ORDER_MUTATION = gql`
+  mutation createOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      ok
+      error
+    }
+  }
 `;
 
 interface IParams {
@@ -38,7 +54,94 @@ export const RestaurantDetail = () => {
     }
   );
 
-  console.log(data);
+  const [orderStarted, setOrderStarted] = useState<boolean>(false);
+  const [orderItems, setOrderItems] = useState<CreateOrderItemInput[]>([]);
+  const triggerStartOrder = () => {
+    setOrderStarted(!orderStarted);
+  };
+
+  const getItem = (dishId: number) => {
+    return orderItems.find((order) => order.dishId === dishId);
+  };
+
+  const isSelected = (dishId: number) => {
+    return Boolean(getItem(dishId));
+  };
+
+  const addItemToOrder = (dishId: number) => {
+    if (isSelected(dishId)) {
+      return;
+    }
+
+    setOrderItems((current) => [{ dishId, options: [] }, ...current]);
+  };
+
+  const removeFromOrder = (dishId: number) => {
+    setOrderItems((current) =>
+      current.filter((dish) => dish.dishId !== dishId)
+    );
+  };
+
+  const addOptionToItem = (dishId: number, optionName: string) => {
+    if (!isSelected(dishId)) {
+      return;
+    }
+
+    const oldItem = getItem(dishId);
+    if (oldItem) {
+      const hasOption = Boolean(
+        oldItem.options?.find((prevOption) => prevOption.name === optionName)
+      );
+
+      if (!hasOption) {
+        removeFromOrder(dishId);
+        setOrderItems((current) => [
+          { dishId, options: [{ name: optionName }, ...oldItem.options!] },
+          ...current,
+        ]);
+      }
+    }
+  };
+
+  const removeOptionFromItem = (dishId: number, optionName: string) => {
+    if (!isSelected(dishId)) {
+      return;
+    }
+
+    const oldItem = getItem(dishId);
+
+    if (oldItem) {
+      removeFromOrder(dishId);
+      setOrderItems((current) => [
+        {
+          dishId,
+          options: oldItem.options?.filter(
+            (option) => option.name !== optionName
+          ),
+        },
+        ...current,
+      ]);
+
+      return;
+    }
+  };
+
+  const getOptionFromItem = (
+    item: CreateOrderItemInput,
+    optionName: string
+  ) => {
+    return item.options?.find((option) => option.name === optionName);
+  };
+
+  const isOptionSelected = (dishId: number, optionName: string) => {
+    const item = getItem(dishId);
+    if (item) {
+      return Boolean(getOptionFromItem(item, optionName));
+    }
+    return false;
+  };
+
+  console.log(orderItems);
 
   return (
     <div>
@@ -56,6 +159,59 @@ export const RestaurantDetail = () => {
           <h6 className="text-sm font-light">
             {data?.restaurant.restaurant?.address}
           </h6>
+        </div>
+      </div>
+      <div className="container flex flex-col items-end mt-20 pb-32">
+        <button onClick={triggerStartOrder} className="mt-20 btn">
+          {orderStarted ? 'Ordering' : 'Start Order'}
+        </button>
+        <div className=" w-full grid mt-16 mb-16 md:grid-cols-3 gap-x-5 gap-y-10">
+          {data?.restaurant.restaurant?.menu.map((dish, index) => (
+            <Dish
+              isSelected={isSelected(dish.id)}
+              id={dish.id}
+              orderStarted={orderStarted}
+              key={index}
+              name={dish.name}
+              description={dish.description}
+              price={dish.price}
+              isCustomer
+              options={dish.options}
+              addItemToOrder={addItemToOrder}
+              removeFromOrder={removeFromOrder}
+            >
+              {dish.options?.map((option, index) => (
+                <DishOption
+                  key={option.name}
+                  isSelected={isOptionSelected(dish.id, option.name)}
+                  name={option.name}
+                  extra={option.extra}
+                  addOptionToItem={addOptionToItem}
+                  dishId={dish.id}
+                  removeOptionFromItem={removeOptionFromItem}
+                />
+
+                // <span
+                //   className={`flex border-4 items-center ${
+                //     isOptionSelected(dish.id, option.name)
+                //       ? 'border-gray-800'
+                //       : ''
+                //   }`}
+                //   key={index}
+                //   onClick={() =>
+                //     addOptionToItem
+                //       ? addOptionToItem(dish.id, {
+                //           name: option.name,
+                //         })
+                //       : null
+                //   }
+                // >
+                //   <h6 className="mr-2">{option?.name}</h6>
+                //   <h6 className="text-sm opacity-75">{option?.extra}</h6>
+                // </span>
+              ))}
+            </Dish>
+          ))}
         </div>
       </div>
     </div>
