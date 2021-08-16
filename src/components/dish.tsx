@@ -49,12 +49,21 @@ export const Dish: React.FC<IDishProps> = ({
         <h3 className="text-lg font-medium">
           {name}
           {orderStarted && (
-            <button onClick={onClick}>{isSelected ? 'Remove' : 'Add'}</button>
+            <button
+              onClick={onClick}
+              className={
+                isSelected
+                  ? 'border-2  bg-red-600 max-w-min px-4 ml-6 text-white outline-none'
+                  : 'border-2 bg-lime-600 max-w-min px-4 ml-6 text-white outline-none'
+              }
+            >
+              {isSelected ? 'Remove' : 'Add'}
+            </button>
           )}
         </h3>
         <h4 className="font-medium">{description}</h4>
       </div>
-      <span>${price}</span>
+      <span>${price.toLocaleString()}</span>
       {isCustomer && options && options?.length !== 0 && (
         <div>
           <h5 className="my-3 mt-5 font-medium">Dish Options:</h5>
