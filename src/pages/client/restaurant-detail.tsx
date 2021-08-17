@@ -170,13 +170,17 @@ export const RestaurantDetail = () => {
   });
 
   const triggerConfirmOrder = () => {
+    if (placingOrder) {
+      return;
+    }
+
     if (orderItems.length === 0) {
       alert("Can't place empty order");
       return;
     }
 
     const ok = window.confirm('You are about to place an order');
-    if (ok) {
+    if (ok && !placingOrder) {
       createOrderMutation({
         variables: {
           input: {
