@@ -156,9 +156,9 @@ export const RestaurantDetail = () => {
     const {
       createOrder: { ok, orderId },
     } = data;
-    if (data.createOrder.ok) {
+    if (ok) {
       alert('order created');
-      history.push(`orders/${orderId}`);
+      history.push(`/orders/${orderId}`);
     }
   };
 
