@@ -7,6 +7,7 @@ import { Category } from '../pages/client/category';
 import { RestaurantDetail } from '../pages/client/restaurant-detail';
 import { Restaurants } from '../pages/client/restaurants';
 import { Search } from '../pages/client/search';
+import { Order } from '../pages/order';
 import { AddDish } from '../pages/owner/add-dish';
 import { AddRestaurants } from '../pages/owner/add-restaurants';
 import { MyRestaurant } from '../pages/owner/my-restaurant';
@@ -47,6 +48,10 @@ const commonRoutes = [
   {
     path: '/edit-profile',
     component: <EditProfile />,
+  },
+  {
+    path: '/orders/:id',
+    component: <Order />,
   },
 ];
 
