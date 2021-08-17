@@ -82,12 +82,11 @@ export const LoggedInRouter = () => {
               {component}
             </Route>
           ))}
-        {data?.me.role === 'Client' &&
-          commonRoutes.map(({ path, component }) => (
-            <Route exact key={path} path={path}>
-              {component}
-            </Route>
-          ))}
+        {commonRoutes.map(({ path, component }) => (
+          <Route exact key={path} path={path}>
+            {component}
+          </Route>
+        ))}
 
         <Route>
           <NotFound />

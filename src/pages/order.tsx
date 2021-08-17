@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { FULL_ORDER_FRAGMENT } from '../fragments';
+import { useMe } from '../hooks/useMe';
 import { getOrder, getOrderVariables } from '../__generated__/getOrder';
 import { orderUpdates } from '../__generated__/orderUpdates';
 
@@ -34,6 +35,7 @@ interface IParams {
 
 export const Order = () => {
   const params = useParams<IParams>();
+  const { data: userData } = useMe();
   const { data, subscribeToMore } = useQuery<getOrder, getOrderVariables>(
     GET_ORDER,
     {
@@ -76,20 +78,6 @@ export const Order = () => {
     }
   }, [data]);
 
-  //subscribe쿼리를 사용하는 방법
-  // const { data: subscriptionData } = useSubscription<
-  //   orderUpdates,
-  //   orderUpdatesVariables
-  // >(ORDER_SUBSCRIPTION, {
-  //   variables: {
-  //     input: {
-  //       id: +params.id,
-  //     },
-  //   },
-  // });
-
-  // console.log(data);
-  // console.log(subscriptionData);
   return (
     <div className="mt-32 container flex justify-center">
       <div className="border border-gray-800 w-full max-w-screen-sm flex flex-col justify-center">
@@ -118,9 +106,21 @@ export const Order = () => {
               {data?.getOrder.order?.driver?.email || 'Not yet.'}
             </span>
           </div>
-          <span className=" text-center mt-5 mb-3  text-2xl text-lime-600">
-            Status: {data?.getOrder.order?.status}
-          </span>
+          {userData?.me.role === 'Client' && (
+            <span className=" text-center mt-5 mb-3  text-2xl text-lime-600">
+              Status: {data?.getOrder.order?.status}
+            </span>
+          )}
+          {userData?.me.role === 'Owner' && (
+            <>
+              {data?.getOrder.order?.status === 'Pending' && (
+                <button className="btn">Accept Order</button>
+              )}
+              {data?.getOrder.order?.status === 'Cooking' && (
+                <button className="btn">Order Cooked</button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
