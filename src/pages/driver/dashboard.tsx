@@ -57,13 +57,16 @@ export const Dashboard = () => {
             lat: 37.58,
             lng: 126.95,
           }}
-          bootstrapURLKeys={{ key: 'AIzaSyCKwxwlpxO6KFUkXcNiWc0eVoWYJL19zJY' }}
+          // bootstrapURLKeys={{ key: 'AIzaSyCKwxwlpxO6KFUkXcNiWc0eVoWYJL19zJY' }}
+          bootstrapURLKeys={{
+            key: process.env.REACT_APP_GOOGLE_MAP_API_KEY || '',
+          }}
         >
           <div
             //@ts-ignore
             lat={driverCoords.lat}
             lng={driverCoords.lng}
-            className="text-lgl"
+            className="text-lg"
           >
             🚖
           </div>
