@@ -1,7 +1,40 @@
 import GoogleMapReact from 'google-map-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+interface ICoords {
+  lat: number;
+  lng: number;
+}
 
 export const Dashboard = () => {
+  const [driverCoords, setDriverCoords] = useState<ICoords>({
+    lng: 0,
+    lat: 0,
+  });
+
+  const onSuccess = ({
+    coords: { latitude, longitude },
+  }: GeolocationPosition) => {
+    setDriverCoords({ lat: latitude, lng: longitude });
+  };
+  const onError = (error: GeolocationPositionError) => {
+    console.log(error);
+  };
+
+  useEffect(() => {
+    navigator.geolocation.watchPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+    });
+  }, []);
+
+  const onAPILoaded = ({ map, maps }: { map: any; maps: any }) => {
+    //map은 지금 당장의 정보
+    //maps 는 GoogleMaps obj로 사용할 수 있는것임
+    setTimeout(() => {
+      map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+    }, 2000);
+  };
+
   return (
     <div>
       <div
@@ -9,15 +42,15 @@ export const Dashboard = () => {
         style={{ width: window.innerWidth, height: '95vh' }}
       >
         <GoogleMapReact
-          defaultZoom={20}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={onAPILoaded}
+          defaultZoom={15}
           defaultCenter={{
-            lat: 59.95,
-            lng: 30.0,
+            lat: 37.58,
+            lng: 126.95,
           }}
-          bootstrapURLKeys={{ key: 'AIzaSyCQ_KSVPaT_m6QxR2VtfduCpTBk1tn7-RE' }}
-        >
-          <h1>Hello</h1>
-        </GoogleMapReact>
+          bootstrapURLKeys={{ key: 'AIzaSyCKwxwlpxO6KFUkXcNiWc0eVoWYJL19zJY' }}
+        ></GoogleMapReact>
       </div>
     </div>
   );
