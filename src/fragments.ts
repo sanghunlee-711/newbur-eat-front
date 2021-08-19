@@ -68,6 +68,7 @@ export const FULL_ORDER_FRAGMENT = gql`
     }
     customer {
       email
+      address
     }
     restaurant {
       name
