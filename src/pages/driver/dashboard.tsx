@@ -6,12 +6,20 @@ interface ICoords {
   lng: number;
 }
 
+interface IDriverProps {
+  lat: number;
+  lng: number;
+  $hover?: any;
+}
+
+const Driver: React.FC<IDriverProps> = () => <div className="text-lg">🚖</div>;
+
 export const Dashboard = () => {
   const [driverCoords, setDriverCoords] = useState<ICoords>({
     lng: 0,
     lat: 0,
   });
-  const [map, setMap] = useState<any>();
+  const [map, setMap] = useState<google.maps.Map>();
   const [maps, setMaps] = useState<any>();
 
   const onSuccess = ({
@@ -31,14 +39,23 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (map && maps) {
-      map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+      map.panTo(new google.maps.LatLng(driverCoords.lat, driverCoords.lng));
+      const geoCoder = new google.maps.Geocoder();
+      geoCoder.geocode(
+        {
+          location: new google.maps.LatLng(driverCoords.lat, driverCoords.lng),
+        },
+        (results, status) => {
+          console.log(status, results);
+        }
+      );
     }
   }, [driverCoords.lat, driverCoords.lng]);
 
   const onAPILoaded = ({ map, maps }: { map: any; maps: any }) => {
     //map은 지금 당장의 정보
     //maps 는 GoogleMaps obj로 사용할 수 있는것임
-    map.panTo(new maps.LatLng(driverCoords.lat, driverCoords.lng));
+    map.panTo(new google.maps.LatLng(driverCoords.lat, driverCoords.lng));
     setMap(map);
     setMaps(maps);
   };
@@ -57,19 +74,11 @@ export const Dashboard = () => {
             lat: 37.58,
             lng: 126.95,
           }}
-          // bootstrapURLKeys={{ key: 'AIzaSyCKwxwlpxO6KFUkXcNiWc0eVoWYJL19zJY' }}
           bootstrapURLKeys={{
             key: process.env.REACT_APP_GOOGLE_MAP_API_KEY || '',
           }}
         >
-          <div
-            //@ts-ignore
-            lat={driverCoords.lat}
-            lng={driverCoords.lng}
-            className="text-lg"
-          >
-            🚖
-          </div>
+          <Driver lat={driverCoords.lat} lng={driverCoords.lng} />
         </GoogleMapReact>
       </div>
     </div>
