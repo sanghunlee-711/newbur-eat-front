@@ -17,6 +17,7 @@ export interface pendingOrders_pendingOrders_driver {
 export interface pendingOrders_pendingOrders_customer {
   __typename: "User";
   email: string;
+  address: string;
 }
 
 export interface pendingOrders_pendingOrders_restaurant {
