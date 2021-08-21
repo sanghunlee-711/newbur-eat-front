@@ -16,7 +16,10 @@ export const isLoggedInVar = makeVar(Boolean(token));
 export const authTokenVar = makeVar(token);
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:4000/graphql',
+  uri:
+    process.env.NODE_ENV === 'production'
+      ? 'wss://newber-eats-backend.herokuapp.com/'
+      : 'ws://localhost:4000/graphql',
   options: {
     reconnect: true,
     connectionParams: {
@@ -26,7 +29,10 @@ const wsLink = new WebSocketLink({
 });
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri:
+    process.env.NODE_ENV === 'production'
+      ? 'https://newber-eats-backend.herokuapp.com/'
+      : 'http://localhost:4000/graphql',
 });
 
 //axios  의 헤더 베이스 만드는것과 유사한 원리로 이렇게 모든 http request에 헤더를 셋 할 수 있게 됨
